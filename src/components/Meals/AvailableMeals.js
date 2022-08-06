@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 
 import Card from "../UI/Card";
 import MealItem from "./MealItem/MealItem";
+import FilterContext from "../../store/filter-context";
 
 import classes from "./AvailableMeals.module.css";
 
@@ -12,6 +13,10 @@ const AvailableMeals = () => {
   const [meals, setMeals] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [httpError, setHttpError] = useState();
+
+  const filterCtx = useContext(FilterContext);
+
+  console.log('test context',filterCtx.enteredValue);
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -63,13 +68,21 @@ const AvailableMeals = () => {
     );
   }
 
-  const mealsList = meals.map((meal) => (
+  const filteredList = meals.filter(item => {
+    if(filterCtx.enteredValue === 'All') {
+      return meals
+    }
+    return item.category === filterCtx.enteredValue
+  })
+
+  const mealsList = filteredList.map((meal) => (
     <MealItem
       key={meal.id}
       id={meal.id}
       name={meal.name}
       description={meal.description}
       price={meal.price}
+      category={meal.category}
     />
   ));
   return (
